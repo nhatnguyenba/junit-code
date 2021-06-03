@@ -21,19 +21,25 @@ import com.electricitymanagement.repository.CustomerRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ElectricityBillManagementApplicationTests {
-	
+public class CustomerTest extends ElectricityBillManagementApplicationTests {
 	CustomerController customerController;
 	@Autowired
 	CustomerRepository CustomerRepository;
 
 	@Test
-	public void getAllCustomerTest() {
+	public void getAllCustomerTest_hasNothing() {
+		customerController = new CustomerController(CustomerRepository);
+		List<Customer> customers = customerController.getAllCustomer();
+		
+		assertNull(customers);
+	}	
+	
+	@Test
+	public void getAllCustomerTest_hasSomething() {
 		customerController = new CustomerController(CustomerRepository);
 		List<Customer> customers = customerController.getAllCustomer();
 		
 		assertNotNull(customers);
-		assertEquals(101, customerController.getAllCustomer().size());
 	}
 
 	@Test
@@ -57,6 +63,9 @@ public class ElectricityBillManagementApplicationTests {
 	@Test
 	public void postCustomerTest_valid() {
 		customerController = new CustomerController(CustomerRepository);
+		
+		int first = customerController.getAllCustomer().size();
+		
 		Customer customer = new Customer();
 		customer.setName("Thần Thiên");
 		customer.setAddress("Hà Nam");
@@ -67,44 +76,55 @@ public class ElectricityBillManagementApplicationTests {
 		customer.setPassword("thanthien");
 		customerController.postCustomer(customer);
 		
-		List<Customer> listCust = customerController.getAllCustomer();
+		int last = customerController.getAllCustomer().size();
 		
-		int index = listCust.lastIndexOf(listCust);
-		
-		Customer receivedCustomer = listCust.get(index);
-		
-		assertSame(customer, receivedCustomer);
+		assertEquals(first, last-1);
 	}
 	
 	@Test
 	public void postCustomerTest_nothing() {
 		customerController = new CustomerController(CustomerRepository);
-		Customer customer = new Customer();
-		Customer receivedCustomer = customerController.postCustomer(customer);
 		
-		assertSame(customer, receivedCustomer);
+		int first = customerController.getAllCustomer().size();
+		
+		Customer customer = new Customer();
+		customerController.postCustomer(customer);
+		
+		int last = customerController.getAllCustomer().size();
+		
+		assertEquals(first, last);
 	}
 	
 	
 	@Test
 	public void postCustomerTest_unfill() {
 		customerController = new CustomerController(CustomerRepository);
+		
+		int first = customerController.getAllCustomer().size();
+		
 		Customer customer = new Customer();
 		customer.setName("Thần Thần");
 		customer.setAddress("Hà Nam");
 		customer.setPhone("0973711787");
-		Customer receivedCustomer = customerController.postCustomer(customer);
+		customerController.postCustomer(customer);
 		
-		assertSame(customer, receivedCustomer);
+		int last = customerController.getAllCustomer().size();
+		
+		assertEquals(first, last);
 	}
 	
 	@Test
 	public void postCustomerTest_null() {
 		customerController = new CustomerController(CustomerRepository);
-		Customer customer = null;
-		Customer receivedCustomer = customerController.postCustomer(customer);
 		
-		assertSame(customer, receivedCustomer);
+		int first = customerController.getAllCustomer().size();
+		
+		Customer customer = null;
+		customerController.postCustomer(customer);
+		
+		int last = customerController.getAllCustomer().size();
+		
+		assertEquals(first, last);
 	}
 
 	@Test
@@ -158,4 +178,5 @@ public class ElectricityBillManagementApplicationTests {
 		
 		customerController.postCustomer(customer);
 	}
+
 }
